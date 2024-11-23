@@ -1,0 +1,4 @@
+1. Cambiar nombre del proyecto
+2. npm install | npm i
+3. npm run dev
+

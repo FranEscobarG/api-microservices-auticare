@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-// import { eventPublisher } from '../events/eventPublisher';
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -14,10 +13,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
         (req as any).user = decoded;  // Usar 'as any' para evitar errores de tipo temporalmente
 
         console.log('Autenticación exitosa para el usuario:', (req as any).user);
-        // Emitir un evento de autenticación exitosa
-        // eventPublisher.emit('authSuccess', { user: decoded });
 
-        next();  // Continúa con el siguiente middleware o ruta
+        next();  
     } catch (ex) {
         res.status(400).send({ error: 'Invalid token.' });
     }
