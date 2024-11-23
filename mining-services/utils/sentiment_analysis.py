@@ -9,7 +9,7 @@ import json
 load_dotenv()
 
 # Configuración
-CREDENTIALS_PATH = os.getenv("CREDENTIALS_PATH", "mimetic-union-388617-12b3ac036695.json")
+CREDENTIALS_PATH = os.getenv("CREDENTIALS_PATH", "mimetic-union-388617-bcf738680a68.json")
 SCOPES = ["https://www.googleapis.com/auth/generative-language"]
 API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent'
 
