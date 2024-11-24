@@ -73,6 +73,18 @@ export class MySQLRecommendationRepository implements RecommendationRepository {
             throw error;
         }
     }
+    
+    async getAllValidated(): Promise<Recommendation[]> {
+        const sql = `SELECT * FROM recomendaciones WHERE validada = TRUE`;
+
+        try {
+            const [rows] = (await query(sql, [])) as any[];
+            return rows.map((row: any) => this.mapToRecommendation(row));
+        } catch (error: any) {
+            console.error("Error al obtener recomendaciones no validadas: ", error.message);
+            throw error;
+        }
+    }
 
     async getNotValidatedByChildId(uuid_nino: string): Promise<Recommendation[]> {
         const sql = `SELECT * FROM recomendaciones WHERE validada = FALSE AND id_nino = ?`;

@@ -45,7 +45,9 @@ def analyze_sentiment_with_gemini(text):
     # Instrucciones precisas para el modelo
     prompt = text
     prompt += (
-        "Realiza un análisis completo de los sentimientos del texto proporcionado, considerando los siguientes pasos:\n"
+        " Evalúa el texto proporcionado.\n"
+        "Si el texto NO contiene una opinión válida o clara (sino solo un mensaje), responde un nulo en formato JSON con la estructura: {{'polaridad': null}}.\n"
+        "Si el texto SI contiene una opinión válida o clara, realiza un análisis completo de los sentimientos del texto proporcionado, considerando los siguientes pasos:\n"
         "1. **Tokenización:** Divide el texto en palabras o frases significativas para un análisis detallado.\n"
         "2. **Lematización:** Identifica la forma base de las palabras para asegurar que las variaciones gramaticales no afecten el análisis.\n"
         "3. **Análisis de Entidades Nombradas:** Detecta nombres propios, ubicaciones, productos u otras entidades relevantes para comprender mejor el contexto.\n"
@@ -54,7 +56,6 @@ def analyze_sentiment_with_gemini(text):
         "Clasifica la polaridad del texto en una escala del 1 al 5, donde:\n"
         "1 = Muy Negativo, 2 = Negativo, 3 = Neutro, 4 = Positivo, 5 = Muy Positivo.\n\n"
         "Devuelve un resultado en formato JSON con la estructura: {{'polaridad': valor}}.\n"
-        "Si el texto no contiene una opinión válida o clara, responde únicamente con: 'Proporciona una opinión válida'.\n"
         "No incluyas explicaciones adicionales ni formato diferente al solicitado."
     )
 

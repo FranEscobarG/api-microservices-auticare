@@ -19,6 +19,9 @@ recommendationRouter.get("/not-validated", recommendationController.getAllNotVal
 // Obtener recomendaciones no validadas por ID de niño
 recommendationRouter.get("/not-validated/child/:id_nino", recommendationController.getNotValidatedByChildId.bind(recommendationController));
 
+// Obtener todas las recomendaciones no validadas
+recommendationRouter.get("/validated", recommendationController.getAllValidated.bind(recommendationController));
+
 // Obtener recomendaciones validadas por especialista
 recommendationRouter.get("/validated/specialist/:id_especialista", recommendationController.getValidatedBySpecialist.bind(recommendationController));
 

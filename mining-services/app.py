@@ -20,9 +20,6 @@ def analyze_sentiment_endpoint():
         print(polaridad)
 
         # Validar respuesta de la API
-        # if not polaridad:
-        #     return jsonify({'error': 'La respuesta de la API no contiene información válida.'}), 500
-
         # if "Proporciona una opinión válida" in polaridad:
         #     return jsonify({'error': 'Proporciona una opinión válida.'}), 400
 

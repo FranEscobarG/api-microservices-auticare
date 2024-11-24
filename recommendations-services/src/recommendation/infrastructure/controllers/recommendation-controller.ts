@@ -6,6 +6,7 @@ import GetNotValidatedUseCase from "../../application/get-notvalidated-usecase";
 import GetNotValidatedByChildIdUseCase from "../../application/get-notvalidated-by-child-id-usecase";
 import GetValidatedBySpecialistUseCase from "../../application/get-validated-by-specialist-usecase";
 import GetValidatedByChildIdUseCase from "../../application/get-validated-by-child-id-usecase";
+import GetValidatedUseCase from "../../application/get-validated-usecase";
 
 class RecommendationController {
   constructor(
@@ -13,6 +14,7 @@ class RecommendationController {
     private validateRecommendationUseCase: ValidateRecommendationUseCase,
     private updateFeedbackUseCase: UpdateFeedbackUseCase,
     private getNotValidatedUseCase: GetNotValidatedUseCase,
+    private getValidatedUseCase: GetValidatedUseCase,
     private getNotValidatedByChildIdUseCase: GetNotValidatedByChildIdUseCase,
     private getValidatedBySpecialistUseCase: GetValidatedBySpecialistUseCase,
     private getValidatedByChildIdUseCase: GetValidatedByChildIdUseCase,
@@ -39,9 +41,12 @@ class RecommendationController {
 
   async updateFeedback(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id, comentario, utilidad } = req.body;
-      await this.updateFeedbackUseCase.execute(id, comentario, utilidad);
-      res.status(200).json({ success: true, message: "Feedback enviado exitosamente." });
+      const { uuid, comentario } = req.body;
+  
+      // Ejecutar el caso de uso
+      await this.updateFeedbackUseCase.execute(uuid, comentario);
+  
+      res.status(200).json({ success: true, message: "Feedback actualizado exitosamente." });
     } catch (error) {
       next(error);
     }
@@ -61,6 +66,16 @@ class RecommendationController {
     try {
       const { id_nino } = req.params;
       const recommendations = await this.getNotValidatedByChildIdUseCase.execute(id_nino);
+      res.json(recommendations);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllValidated(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        console.log(req.params)
+      const recommendations = await this.getValidatedUseCase.execute();
       res.json(recommendations);
     } catch (error) {
       next(error);

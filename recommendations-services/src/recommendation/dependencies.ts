@@ -7,6 +7,7 @@ import GetValidatedByChildIdUseCase from "./application/get-validated-by-child-i
 import RecommendationController from "./infrastructure/controllers/recommendation-controller";
 import CreateRecommendationUseCase from "./application/create-recommendation-usecase";
 import ValidateRecommendationUseCase from "./application/validate-recommendation-usecase";
+import GetValidatedUseCase from "./application/get-validated-usecase";
 
 const recommendationRepository = new MySQLRecommendationRepository();
 
@@ -15,6 +16,7 @@ export const validateRecommendationUseCase = new ValidateRecommendationUseCase(r
 export const updateFeedbackUseCase = new UpdateFeedbackUseCase(recommendationRepository);
 export const getNotValidatedUseCase = new GetNotValidatedUseCase(recommendationRepository);
 export const getNotValidatedByChildIdUseCase = new GetNotValidatedByChildIdUseCase(recommendationRepository);
+export const getValidatedUseCase = new GetValidatedUseCase(recommendationRepository);
 export const getValidatedBySpecialistUseCase = new GetValidatedBySpecialistUseCase(recommendationRepository);
 export const getValidatedByChildIdUseCase = new GetValidatedByChildIdUseCase(recommendationRepository);
 
@@ -23,6 +25,7 @@ export const recommendationController = new RecommendationController(
     validateRecommendationUseCase,
     updateFeedbackUseCase,
     getNotValidatedUseCase,
+    getValidatedUseCase,
     getNotValidatedByChildIdUseCase,
     getValidatedBySpecialistUseCase,
     getValidatedByChildIdUseCase
