@@ -8,10 +8,8 @@ import { VerifyUserUseCase } from "../application/verify-user-usecase";
 import { VerifyUserListener } from "./event-listeners/verify-user-listener";
 import config from "../../config/config";
 
-const secretKey = process.env.JWT_SECRET || "supersecretkey";
-
 const authRepository = new PostgreSQLAuthRepository(); 
-const tokenService = new JWTTokenService(secretKey);
+const tokenService = new JWTTokenService(config.JWT_SECRET);
 const eventBus = new RabbitMQEventBusAdapter(config.rabbitURL);
 
 const loginUseCase = new LoginUseCase(authRepository, tokenService);
