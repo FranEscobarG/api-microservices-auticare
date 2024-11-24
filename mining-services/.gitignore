@@ -2,7 +2,7 @@
 /dist
 
 .idea
-*.env
-venv
+.env
+/venv
 
 /mining-services/mimetic-union-388617-bcf738680a68.json
