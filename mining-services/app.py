@@ -19,10 +19,6 @@ def analyze_sentiment_endpoint():
         polaridad = analyze_sentiment_with_gemini(text)
         print(polaridad)
 
-        # Validar respuesta de la API
-        # if "Proporciona una opinión válida" in polaridad:
-        #     return jsonify({'error': 'Proporciona una opinión válida.'}), 400
-
         # Devolver JSON con la polaridad
         return jsonify({'polaridad': polaridad})
 
@@ -31,18 +27,20 @@ def analyze_sentiment_endpoint():
 
 
 
-# Endpoint para análisis predictivo
-@app.route('/predict-recommendations', methods=['GET'])
+# Endpoint para predicciones de series de tiempo
+@app.route('/predict-recommendations', methods=['POST'])
 def predict_recommendations():
-    # Obtén datos de tu servicio de recomendaciones
-    response = requests.get('http://localhost:3000/api/v1/recommendations/not-validated')  # Cambia por tu endpoint real
-    if response.status_code != 200:
-        return jsonify({'error': 'No se pudieron obtener las recomendaciones.'}), 500
+    try:
+        data = request.get_json()
+        if not data or not isinstance(data, list):
+            return jsonify({'error': 'Datos no válidos. Proporcione un array de objetos.'}), 400
 
-    recommendations = response.json()
-    prediction_result = perform_time_series_prediction(recommendations)
+        # Procesar las recomendaciones
+        prediction_result = perform_time_series_prediction(data)
+        return jsonify(prediction_result)
 
-    return jsonify(prediction_result)
+    except Exception as e:
+        return jsonify({'error': f'Error interno del servidor: {str(e)}'}), 500
 
 
 if __name__ == '__main__':

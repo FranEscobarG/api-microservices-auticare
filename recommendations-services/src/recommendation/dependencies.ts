@@ -8,6 +8,7 @@ import RecommendationController from "./infrastructure/controllers/recommendatio
 import CreateRecommendationUseCase from "./application/create-recommendation-usecase";
 import ValidateRecommendationUseCase from "./application/validate-recommendation-usecase";
 import GetValidatedUseCase from "./application/get-validated-usecase";
+import GetValidatedPredictionByChildIdUseCase from "./application/get-prediction-validated-by-child-usecase";
 
 const recommendationRepository = new MySQLRecommendationRepository();
 
@@ -19,6 +20,7 @@ export const getNotValidatedByChildIdUseCase = new GetNotValidatedByChildIdUseCa
 export const getValidatedUseCase = new GetValidatedUseCase(recommendationRepository);
 export const getValidatedBySpecialistUseCase = new GetValidatedBySpecialistUseCase(recommendationRepository);
 export const getValidatedByChildIdUseCase = new GetValidatedByChildIdUseCase(recommendationRepository);
+export const getValidatedPredictionByChildIdUseCase = new GetValidatedPredictionByChildIdUseCase(recommendationRepository)
 
 export const recommendationController = new RecommendationController(
     createRecommendationUseCase,
@@ -28,5 +30,6 @@ export const recommendationController = new RecommendationController(
     getValidatedUseCase,
     getNotValidatedByChildIdUseCase,
     getValidatedBySpecialistUseCase,
-    getValidatedByChildIdUseCase
+    getValidatedByChildIdUseCase,
+    getValidatedPredictionByChildIdUseCase
 )

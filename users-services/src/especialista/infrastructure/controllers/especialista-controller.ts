@@ -5,6 +5,21 @@ import DeleteEspecialistaUseCase from "../../application/delete-especialista-use
 import { GetEspecialistaByID } from "../../application/get-especialistaById-usecase";
 import GetEspecialistaListUseCase from "../../application/get-especialistaList-usecase";
 import UpdateEspecialistaUseCase from "../../application/update-especialista-usecase";
+import Joi from "joi";
+
+const especialistaSchema = Joi.object({
+  nombre: Joi.string().required(),
+  apellido_paterno: Joi.string().required(),
+  apellido_materno: Joi.string().required(),
+  sexo: Joi.string().valid("Masculino", "Femenino").required(),
+  correo: Joi.string().email().required(),
+  contrasena: Joi.string().min(8).max(20).required(),
+  telefono: Joi.string().pattern(/^\d{10}$/).required(),
+  fecha_nacimiento: Joi.date().iso().required(),
+  titulo_especialidad: Joi.string().optional(),
+  cedula_profesional: Joi.string().optional(),
+});
+
 
 class EspecialistaController {
   constructor(
@@ -13,18 +28,20 @@ class EspecialistaController {
     private getEspecialistaByID: GetEspecialistaByID,
     private updateEspecialistaUseCase: UpdateEspecialistaUseCase,
     private deleteEspecialistaUseCase: DeleteEspecialistaUseCase
-  ) {}
+  ) { }
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       let especialistaPayload = req.body;
-      // Validación de entrada
-    if (!this.isValidEmail(especialistaPayload.correo)) {
-      throw new Error("El formato del correo electrónico es inválido");
-    }
-    if (!this.isValidPassword(especialistaPayload.contrasena)) {
-      throw new Error("La contraseña debe tener al menos 8 caracteres");
-    }
+      // 2. Validación de tipo
+      const { error } = especialistaSchema.validate(especialistaPayload);
+      if (error) {
+        res.status(400).json({ error: error.details[0].message });
+        return 
+      }
+
+
+      // e. Codificación de Entradas (Input Encoding) - Base64
       const hashedPassword = await bcrypt.hash(especialistaPayload.contrasena, 10); // Cifrar la contraseña
 
       // Reemplazar la contraseña cifrada
@@ -42,15 +59,7 @@ class EspecialistaController {
     }
   }
 
-  // Método para validar formato de correo
-  private isValidEmail(email: string): boolean {
-    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    return emailRegex.test(email);
-  }
-  // Método para validar requisitos de contraseña
-  private isValidPassword(password: string): boolean {
-    return password.length >= 8;
-  }
+
 
   async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

@@ -28,4 +28,7 @@ recommendationRouter.get("/validated/specialist/:id_especialista", recommendatio
 // Obtener recomendaciones validadas por ID de niño
 recommendationRouter.get("/validated/child/:id_nino", recommendationController.getValidatedByChildId.bind(recommendationController));
 
+// Obtener predicciones de las recomendaciones validadas por ID de niño
+recommendationRouter.get("/validated/predictions/:id_nino", recommendationController.getPredictionsByChildId.bind(recommendationController));
+
 export default recommendationRouter;

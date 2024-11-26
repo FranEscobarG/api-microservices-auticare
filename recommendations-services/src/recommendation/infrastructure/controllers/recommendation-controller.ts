@@ -7,6 +7,7 @@ import GetNotValidatedByChildIdUseCase from "../../application/get-notvalidated-
 import GetValidatedBySpecialistUseCase from "../../application/get-validated-by-specialist-usecase";
 import GetValidatedByChildIdUseCase from "../../application/get-validated-by-child-id-usecase";
 import GetValidatedUseCase from "../../application/get-validated-usecase";
+import GetValidatedPredictionByChildIdUseCase from "../../application/get-prediction-validated-by-child-usecase";
 
 class RecommendationController {
   constructor(
@@ -18,6 +19,7 @@ class RecommendationController {
     private getNotValidatedByChildIdUseCase: GetNotValidatedByChildIdUseCase,
     private getValidatedBySpecialistUseCase: GetValidatedBySpecialistUseCase,
     private getValidatedByChildIdUseCase: GetValidatedByChildIdUseCase,
+    private getValidatedPredictionByChildIdUseCase: GetValidatedPredictionByChildIdUseCase,
   ) {}
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -97,6 +99,19 @@ class RecommendationController {
       const { id_nino } = req.params;
       const recommendations = await this.getValidatedByChildIdUseCase.execute(id_nino);
       res.json(recommendations);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getPredictionsByChildId(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id_nino } = req.params;
+
+      // Ejecutar el caso de uso
+      const predictions = await this.getValidatedPredictionByChildIdUseCase.execute(id_nino);
+
+      res.json(predictions);
     } catch (error) {
       next(error);
     }

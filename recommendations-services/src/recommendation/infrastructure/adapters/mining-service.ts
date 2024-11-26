@@ -16,6 +16,18 @@ class MiningService {
       throw new Error("Error al conectar con el servicio de minería.");
     }
   }
+
+  async predictRecommendations(data: object[]): Promise<any> {
+    try {
+    console.log(data)
+
+      const response = await axios.post(`${this.baseUrl}/predict-recommendations`, { data });
+      return response.data; // Retorna la respuesta completa
+    } catch (error: any) {
+      console.error("Error al predecir recomendaciones: ", error.message);
+      throw new Error("Error al conectar con el servicio de minería.");
+    }
+  }
 }
 
 export default new MiningService();

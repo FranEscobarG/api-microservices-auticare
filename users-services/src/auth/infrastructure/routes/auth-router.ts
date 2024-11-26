@@ -6,12 +6,12 @@ const authRouter = Router();
 
 // Configuración del limitador de tasa para las rutas de autenticación
 const authLimiter = rateLimit({
-	windowMs: 10 * 60 * 1000, // 10 minutos
-	limit: 50, // Límite de 50 solicitudes por IP cada 10 minutos
-	standardHeaders: 'draft-7', 
-	legacyHeaders: false, 
-	message: 'Se ha excedido el límite de solicitudes. Inténtalo de nuevo más tarde.'
+	windowMs: 5 * 60 * 1000, // 5 minutos
+	limit: 5, // 5 intentos de login por IP cada 5 minutos
+	message: 'Demasiados intentos de inicio de sesión. Por favor, inténtalo de nuevo más tarde.',
+	headers: true,  // Devuelve información sobre el límite en los headers
 });
+
 
 // Middleware para limitar las solicitudes en determinadas ruta
 authRouter.post("/login", authLimiter, authController.login.bind(authController));

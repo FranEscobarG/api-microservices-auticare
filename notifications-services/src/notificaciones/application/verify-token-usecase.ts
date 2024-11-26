@@ -19,6 +19,7 @@ export class VerifyTokenUseCase {
     if (foundToken.status === "USED" || foundToken.status === "EXPIRED") {
       return false;
     }
+    // 6. Validación cruzada: se valida que la fecha actual no sea mayor que la de expiracion
     if (new Date() > foundToken.expiresAt) {
       await this.notificationRepository.updateTokenStatus(foundToken.id!, "EXPIRED");
       return false;

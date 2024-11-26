@@ -1,6 +1,12 @@
 import { EventBusPort } from "../../shared/ports/event-bus-port";
 import { Tutor } from "../domain/tutor";
 import { TutorRepository } from "../domain/tutor-repository";
+import PasswordValidator from 'password-validator';
+
+// 9. Uso de librerías y frameworks de validación
+const passwordSchema = new PasswordValidator();
+  passwordSchema
+    .is().min(8);
 
 class CreateTutorUseCase {
   constructor(
@@ -14,7 +20,7 @@ class CreateTutorUseCase {
       throw new Error("El formato del correo electrónico es inválido");
     }
     if (!this.isValidPassword(tutorPayload.contrasena)) {
-      throw new Error("La contraseña debe tener al menos 8 caracteres");
+      throw new Error("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número");
     }
     
     const tutor = new Tutor(
@@ -52,8 +58,8 @@ class CreateTutorUseCase {
   }
 
   // Método para validar requisitos de contraseña
-  private isValidPassword(password: string): boolean {
-    return password.length >= 8;
+  private isValidPassword(password: string): boolean | any {
+    return passwordSchema.validate(password);
   }
 }
 
