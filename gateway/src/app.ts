@@ -18,10 +18,11 @@ const PORT = config.port;
 
 app.use('/api/v1/users', proxy(config.userServiceURL));
 app.use('/api/v1/notifications', proxy(config.notificationServiceURL));
-app.use('/api/v1/mining', authMiddleware, proxy(config.miningServiceURL)); // servicio de uso interno
+app.use('/api/v1/mining', proxy(config.miningServiceURL)); // servicio de uso interno
 // Rutas protegidas
 app.use('/api/v1/payments', authMiddleware, proxy(config.paymentsServiceURL));
-app.use('/api/v1/recommendations', authMiddleware, proxy(config.recommendationsServiceURL));
+app.use('/api/v1/recommendations', proxy(config.recommendationsServiceURL));
+// app.use('/api/v1/recommendations', authMiddleware, proxy(config.recommendationsServiceURL));
 
 
 app.listen(PORT, () => {
