@@ -6,7 +6,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "outDir": "./dist",                    // Carpeta de salida para los archivos .js
+    "rootDir": "./src"
   },
-  "include": ["src/**/*.ts", "src/express.d.ts"]  // Asegúrate de incluir express.d.ts
+  "include": ["src/**/*.ts", "src/express.d.ts"],                       // Archivos a incluir
+  "exclude": ["node_modules", "dist"]     
 }

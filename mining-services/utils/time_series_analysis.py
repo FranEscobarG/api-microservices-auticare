@@ -1,67 +1,59 @@
 import pandas as pd
 from statsmodels.tsa.holtwinters import ExponentialSmoothing
 
+
 def perform_time_series_prediction(recommendations):
-    try:
-        # Convertir las recomendaciones en un DataFrame
-        df = pd.DataFrame(recommendations)
-        if 'fecha_validacion' not in df or 'categoria' not in df:
-            raise ValueError("Los objetos deben contener los campos 'fecha_validacion' y 'categoria'.")
-
-        # Convertir la fecha a formato datetime
-        df['fecha_validacion'] = pd.to_datetime(df['fecha_validacion'])
-
-        # Agregar columna de conteo
-        df['count'] = 1
-
-        # Crear un índice temporal por categoría
-        df_grouped = (
-            df.groupby([pd.Grouper(key='fecha_validacion', freq='W'), 'categoria'])  # Agrupación semanal
-            .count()
-            .reset_index()
-        )
-
-        # Crear tabla pivote (filas: fecha, columnas: categoría, valores: conteo)
-        pivot_table = (
-            df_grouped.pivot(index='fecha_validacion', columns='categoria', values='count')
-            .fillna(0)  # Rellenar valores faltantes con 0
-        )
-
-        # Predicciones por categoría
-        predictions = {}
-        reales = {}
-        for categoria in pivot_table.columns:
-            # Extraer los datos de la categoría
-            data = pivot_table[categoria]
-
-            # Si hay datos insuficientes, continuar
-            if len(data) < 2:
-                predictions[categoria] = "Datos insuficientes para realizar predicción"
-                reales[categoria] = int(data.iloc[-1]) if not data.empty else 0
-                continue
-
-            # Ajustar el modelo Holt-Winters
-            # Determinar si hay suficientes datos para el modelo estacional
-            if len(data) < 8:  # Menos de 2 ciclos completos (seasonal_periods * 2)
-                model = ExponentialSmoothing(data).fit()  # Sin componente estacional
-            else:
-                model = ExponentialSmoothing(
-                    data,
-                    seasonal="add",  # Componente estacional aditivo
-                    seasonal_periods=4,  # Consideramos 4 periodos para datos semanales
-                ).fit()
-
-            # Generar predicción para el siguiente periodo
-            forecast = model.forecast(steps=1)
-
-            reales[categoria] = int(data.iloc[-1])  # Último valor real convertido a `int`
-            predictions[categoria] = int(forecast.iloc[0])  # Predicción convertida a `int`
-
-        # Retornar los resultados
+    # Validar que la entrada no esté vacía
+    if not recommendations:
         return {
-            "reales": reales,
-            "predichos": predictions,
+            'reales': 0,
+            'predichos': 0
+        }
+
+    # Convertir a DataFrame
+    df = pd.DataFrame(recommendations)
+
+    # Filtrar solo recomendaciones validadas
+    df = df[df['validada'] == 1]
+
+    # Cambiar la agrupación a semanas
+    df['fecha_validacion'] = pd.to_datetime(df['fecha_validacion']).dt.to_period('W')
+
+    # Contar recomendaciones validadas por mes
+    df_grouped = df.groupby('fecha_validacion').size().reset_index(name='total_recomendaciones')
+    df_grouped['fecha_validacion'] = df_grouped['fecha_validacion'].dt.to_timestamp()
+
+    # Manejar escenarios con pocos datos
+    if len(df_grouped) < 2:
+        return {
+            'reales': int(df_grouped['total_recomendaciones'].sum()) if not df_grouped.empty else 0,
+            'predichos': 0
+        }
+
+    try:
+        # Preparar datos para el modelo
+        data = df_grouped.set_index('fecha_validacion')['total_recomendaciones']
+
+        # Modelo Holt-Winters
+        model = ExponentialSmoothing(
+            data,
+            trend='add',
+            seasonal='add',
+            seasonal_periods=4
+        ).fit()
+
+        # Pronóstico para el siguiente mes
+        forecast = model.forecast(steps=1)
+
+        # Devolver resultados
+        return {
+            'reales': int(data.iloc[-1]),
+            'predichos': int(max(0, forecast.iloc[0]))
         }
 
     except Exception as e:
-        raise ValueError(f"Error durante el análisis de series de tiempo: {str(e)}")
+        print(f"Error en predicción: {e}")
+        return {
+            'reales': int(data.iloc[-1]) if len(data) > 0 else 0,
+            'predichos': 0
+        }

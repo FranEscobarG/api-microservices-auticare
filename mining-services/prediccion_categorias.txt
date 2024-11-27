@@ -1,0 +1,78 @@
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+
+def perform_time_series_prediction(recommendations):
+    # Define all categories
+    ALL_CATEGORIES = [
+        'Diagnóstico y Evaluación',
+        'Tratamientos y Terapias',
+        'Educación y Apoyo Escolar',
+        'Vida Familiar y Social',
+        'Salud y Bienestar',
+        'Recursos y Servicios'
+    ]
+
+    # Convert recommendations to DataFrame
+    df = pd.DataFrame(recommendations)
+
+    # Convert and clean datetime
+    df['fecha_validacion'] = pd.to_datetime(df['fecha_validacion']).dt.floor('D')
+
+    # Group by date and category, count recommendations
+    df_grouped = df.groupby([df['fecha_validacion'], 'categoria']).size().reset_index(name='count')
+
+    # Create a complete date range
+    date_range = pd.date_range(start=df['fecha_validacion'].min(), end=df['fecha_validacion'].max(), freq='D')
+
+    # Create pivot table with all categories
+    pivot_table = pd.DataFrame(index=date_range, columns=ALL_CATEGORIES)
+    pivot_table.fillna(0, inplace=True)
+
+    # Fill pivot table with actual data
+    for _, row in df_grouped.iterrows():
+        pivot_table.loc[row['fecha_validacion'], row['categoria']] = row['count']
+
+    # Prediction results
+    predictions = {}
+    reales = {}
+
+    # Forecast for each category
+    for categoria in ALL_CATEGORIES:
+        data = pivot_table[categoria]
+
+        # Mejora el manejo de datos escasos
+        if len(data) < 2 or data.sum() == 0:
+            reales[categoria] = int(data.iloc[-1]) if len(data) > 0 else 0
+            predictions[categoria] = 0
+            continue
+
+        # Si hay muy pocos datos, usar promedio simple o último valor
+        if len(data) <= 7:
+            reales[categoria] = int(data.iloc[-1])
+            predictions[categoria] = int(np.mean(data)) if data.sum() > 0 else 0
+            continue
+
+        try:
+            # Ajustar parámetros para datos escasos
+            model = ExponentialSmoothing(
+                data,
+                trend='add',
+                seasonal='add',
+                seasonal_periods=min(len(data) // 2, 7)  # Ajuste de períodos estacionales
+            ).fit()
+
+            forecast = model.forecast(steps=14)
+            reales[categoria] = int(data.iloc[-1])
+            predictions[categoria] = int(max(0, forecast.mean()))
+
+        except Exception as e:
+            print(f"Error en categoría {categoria}: {e}")
+            reales[categoria] = int(data.iloc[-1]) if len(data) > 0 else 0
+            predictions[categoria] = 0
+
+    return {
+        'reales': reales,
+        'predichos': predictions
+    }

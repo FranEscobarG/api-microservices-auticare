@@ -7,6 +7,7 @@ export const pool = new Pool({
   database: config.dbName,
   password: config.dbPassword,
   port: config.dbPort,
+  ssl: false,
   max: 10, // Máximo de conexiones simultáneas
   idleTimeoutMillis: 30000, // Tiempo antes de cerrar una conexión inactiva
   connectionTimeoutMillis: 5000, // Tiempo de espera para obtener una conexión
